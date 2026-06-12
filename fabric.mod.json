@@ -1,0 +1,28 @@
+{
+	"schemaVersion": 1,
+	"id": "trowel-key",
+	"version": "1.0.0",
+	"name": "Trowel Key",
+	"description": "Adds a hotkey (default: R) to place a random placeable block from your hotbar",
+	"authors": [
+		"Cuebitt"
+	],
+	"contact": {
+		"homepage": "https://github.com/cuebitt/trowel-key",
+		"sources": "https://github.com/cuebitt/trowel-key"
+	},
+	"license": "MIT",
+	"icon": "assets/trowel-key/icon.png",
+	"environment": "client",
+	"entrypoints": {
+		"client": [
+			"cuebitt.trowelkey.client.TrowelKeyClient"
+		]
+	},
+	"depends": {
+		"fabricloader": ">=0.17.2",
+		"minecraft": "~1.21.1",
+		"java": ">=21",
+		"fabric-api": "*"
+	}
+}
