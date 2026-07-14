@@ -3,7 +3,7 @@
 	"id": "trowel-key",
 	"version": "${version}",
 	"name": "Trowel Key",
-	"description": "Adds a hotkey (default: R) to place a random placeable block from your hotbar",
+	"description": "Right-click or press R (configurable) to place a random placeable block from your hotbar or full inventory. Shift+Right Click to toggle between Hotbar and Inventory mode.",
 	"authors": [
 		"Cuebitt"
 	],
@@ -17,8 +17,14 @@
 	"entrypoints": {
 		"client": [
 			"cuebitt.trowelkey.client.TrowelKeyClient"
+		],
+		"modmenu": [
+			"cuebitt.trowelkey.client.ModMenuIntegration"
 		]
 	},
+	"mixins": [
+		"trowel-key.client.mixins.json"
+	],
 	"depends": {
 		"fabricloader": ">=0.17.2",
 		"minecraft": "~1.21.1",

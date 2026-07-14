@@ -1,4 +1,11 @@
 {
   "key.categories.trowel-key": "Trowel Key",
-  "key.trowel-key.place-random": "Place Random Hotbar Block"
+  "key.trowel-key.place-random": "Place Random Block",
+  "title.trowel-key.config": "Trowel Key Config",
+  "category.trowel-key.general": "General",
+  "option.trowel-key.trowel_item": "Trowel Item",
+  "option.trowel-key.trowel_name": "Trowel Name",
+  "option.trowel-key.show_enchant_glint": "Show Enchantment Glint",
+  "action.trowel-key.mode.hotbar": "Switched to Hotbar mode",
+  "action.trowel-key.mode.inventory": "Switched to Inventory mode"
 }

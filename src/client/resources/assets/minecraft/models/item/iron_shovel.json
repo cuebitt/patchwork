@@ -1,0 +1,14 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "minecraft:item/iron_shovel"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "trowel-key:is_trowel": 1.0
+      },
+      "model": "trowel-key:item/trowel"
+    }
+  ]
+}

@@ -1,12 +1,16 @@
 {
-	"required": true,
-	"package": "cuebitt.trowelkey.client.mixin",
-	"compatibilityLevel": "JAVA_21",
-	"client": [],
-	"injectors": {
-		"defaultRequire": 1
-	},
-	"overwrites": {
-		"requireAnnotations": true
-	}
+  "required": true,
+  "package": "cuebitt.trowelkey.client.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "client": [
+    "MixinMinecraft_StartUse",
+    "MixinShovelItem",
+    "MixinItemStack_HasFoil"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  }
 }
