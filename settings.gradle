@@ -10,4 +10,4 @@ pluginManagement {
 }
 
 // Should match your modid
-rootProject.name = 'trowel-key'
+rootProject.name = 'patchwork'

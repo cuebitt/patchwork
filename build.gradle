@@ -1,6 +1,21 @@
 plugins {
 	id 'net.fabricmc.fabric-loom-remap' version "${loom_version}"
 	id 'maven-publish'
+	id 'com.diffplug.spotless' version '7.0.4'
+}
+
+spotless {
+	java {
+		target 'src/**/*.java'
+		importOrder()
+		removeUnusedImports()
+		googleJavaFormat('1.24.0')
+		formatAnnotations()
+	}
+}
+
+tasks.named('check') {
+	dependsOn 'spotlessCheck'
 }
 
 version = project.mod_version
@@ -21,7 +36,7 @@ loom {
 	splitEnvironmentSourceSets()
 
 	mods {
-		"trowel-key" {
+		"patchwork" {
 			sourceSet sourceSets.main
 			sourceSet sourceSets.client
 		}

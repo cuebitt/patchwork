@@ -1,8 +1,8 @@
 {
 	"schemaVersion": 1,
-	"id": "trowel-key",
+	"id": "patchwork",
 	"version": "${version}",
-	"name": "Trowel Key",
+	"name": "Patchwork",
 	"description": "Right-click or press R (configurable) to place a random placeable block from your hotbar or full inventory. Shift+Right Click to toggle between Hotbar and Inventory mode.",
 	"authors": [
 		"Cuebitt"
@@ -12,18 +12,18 @@
 		"sources": "https://github.com/cuebitt/trowel-key"
 	},
 	"license": "MIT",
-	"icon": "assets/trowel-key/icon.png",
+	"icon": "assets/patchwork/icon.png",
 	"environment": "client",
 	"entrypoints": {
 		"client": [
-			"cuebitt.trowelkey.client.TrowelKeyClient"
+			"cuebitt.patchwork.client.PatchworkClient"
 		],
 		"modmenu": [
-			"cuebitt.trowelkey.client.ModMenuIntegration"
+			"cuebitt.patchwork.client.ModMenuIntegration"
 		]
 	},
 	"mixins": [
-		"trowel-key.client.mixins.json"
+		"patchwork.client.mixins.json"
 	],
 	"depends": {
 		"fabricloader": ">=0.17.2",

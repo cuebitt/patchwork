@@ -53,5 +53,5 @@ jobs:
           changelog: ${{ github.event.release.body }}
           loaders: fabric
           game-versions: 1.21.1
-          files: build/libs/trowel-key-${{ env.MOD_VERSION }}.jar
-          primary-file: trowel-key-${{ env.MOD_VERSION }}.jar
+          files: build/libs/patchwork-${{ env.MOD_VERSION }}.jar
+          primary-file: patchwork-${{ env.MOD_VERSION }}.jar

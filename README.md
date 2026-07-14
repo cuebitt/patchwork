@@ -1,4 +1,4 @@
-# Trowel Key
+# Patchwork
 
 A Fabric mod for Minecraft 1.21.1 that lets you place random blocks from your
 inventory with a hotkey or right-click.
@@ -28,9 +28,9 @@ inventory with a hotkey or right-click.
 ## Configuration
 
 - The key binding can be changed in Minecraft's **Controls** menu under the
-  **Trowel Key** category
+  **Patchwork** category
 - Additional options (trowel item, trowel name, enchantment glint toggle) are
-  available via ModMenu or by editing `config/trowel-key/config.json`
+  available via ModMenu or by editing `config/patchwork/config.json`
 
 ## Building from Source
 

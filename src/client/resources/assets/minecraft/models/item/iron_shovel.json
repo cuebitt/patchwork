@@ -6,9 +6,9 @@
   "overrides": [
     {
       "predicate": {
-        "trowel-key:is_trowel": 1.0
+        "patchwork:is_trowel": 1.0
       },
-      "model": "trowel-key:item/trowel"
+      "model": "patchwork:item/trowel"
     }
   ]
 }
