@@ -8,8 +8,8 @@
 		"Cuebitt"
 	],
 	"contact": {
-		"homepage": "https://github.com/cuebitt/trowel-key",
-		"sources": "https://github.com/cuebitt/trowel-key"
+		"homepage": "https://github.com/cuebitt/patchwork",
+		"sources": "https://github.com/cuebitt/patchwork"
 	},
 	"license": "MIT",
 	"icon": "assets/patchwork/icon.png",

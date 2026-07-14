@@ -22,7 +22,7 @@ inventory with a hotkey or right-click.
 1. Install [Fabric Loader](https://fabricmc.net/use/) for Minecraft 1.21.1
 2. Install [Fabric API](https://modrinth.com/mod/fabric-api)
 3. Download the latest release from
-   [GitHub](https://github.com/cuebitt/trowel-key/releases)
+   [GitHub](https://github.com/cuebitt/patchwork/releases)
 4. Place the `.jar` file in your `mods` folder
 
 ## Configuration
