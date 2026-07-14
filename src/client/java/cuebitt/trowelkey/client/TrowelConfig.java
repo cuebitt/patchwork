@@ -10,13 +10,17 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Persisted mod configuration, loaded from {@code config/trowel-key/config.json}.
  *
  * <p>Holds the item id treated as a trowel, the custom name that marks a stack as a trowel,
- * and whether the enchantment glint is shown on trowels in inventory mode. A single shared
- * instance is created lazily and saved on change.
+ * and whether the enchantment glint is shown on trowels. It also holds the hotkey settings
+ * (enabled flag, mode, whether a trowel must be held, and a resettable per-trowel default
+ * mode) and the block filter used to include or exclude blocks from random placement. A
+ * single shared instance is created lazily and saved on change.
  */
 public class TrowelConfig {
     private static final Path CONFIG_PATH = Paths.get("config", "trowel-key", "config.json");
@@ -27,6 +31,13 @@ public class TrowelConfig {
     private String trowel_item = "minecraft:iron_shovel";
     private String trowel_name = "Trowel";
     private boolean show_enchant_glint = true;
+
+    private boolean hotkey_enabled = true;
+    private TrowelMode hotkey_mode = TrowelMode.HOTBAR;
+    private boolean hotkey_requires_trowel = true;
+    private TrowelMode default_mode = TrowelMode.HOTBAR;
+    private BlockFilterMode block_filter_mode = BlockFilterMode.NONE;
+    private List<String> block_filter = new ArrayList<>();
 
     /**
      * Returns the shared configuration instance, loading it from disk on first use.
@@ -88,6 +99,91 @@ public class TrowelConfig {
      */
     public void setShowEnchantGlint(boolean show) {
         this.show_enchant_glint = show;
+    }
+
+    /**
+     * Returns whether the place-random keybinding (hotkey) is enabled.
+     */
+    public boolean isHotkeyEnabled() {
+        return hotkey_enabled;
+    }
+
+    /**
+     * Enables or disables the place-random keybinding (hotkey).
+     */
+    public void setHotkeyEnabled(boolean enabled) {
+        this.hotkey_enabled = enabled;
+    }
+
+    /**
+     * Returns the mode (hotbar or inventory) used when placing via the hotkey.
+     */
+    public TrowelMode getHotkeyMode() {
+        return hotkey_mode;
+    }
+
+    /**
+     * Sets the mode (hotbar or inventory) used when placing via the hotkey.
+     */
+    public void setHotkeyMode(TrowelMode mode) {
+        this.hotkey_mode = mode;
+    }
+
+    /**
+     * Returns whether a trowel must be held for the hotkey to place blocks.
+     */
+    public boolean isHotkeyRequiresTrowel() {
+        return hotkey_requires_trowel;
+    }
+
+    /**
+     * Sets whether a trowel must be held for the hotkey to place blocks.
+     */
+    public void setHotkeyRequiresTrowel(boolean requires) {
+        this.hotkey_requires_trowel = requires;
+    }
+
+    /**
+     * Returns the default placement mode assigned to a trowel before it has been
+     * toggled with Shift + Right Click.
+     */
+    public TrowelMode getDefaultMode() {
+        return default_mode;
+    }
+
+    /**
+     * Sets the default placement mode assigned to a trowel before it has been toggled.
+     */
+    public void setDefaultMode(TrowelMode mode) {
+        this.default_mode = mode;
+    }
+
+    /**
+     * Returns how the block filter is applied to random placement.
+     */
+    public BlockFilterMode getBlockFilterMode() {
+        return block_filter_mode;
+    }
+
+    /**
+     * Sets how the block filter is applied to random placement.
+     */
+    public void setBlockFilterMode(BlockFilterMode mode) {
+        this.block_filter_mode = mode;
+    }
+
+    /**
+     * Returns the list of block item ids used by the block filter.
+     */
+    public List<String> getBlockFilter() {
+        return block_filter;
+    }
+
+    /**
+     * Sets the list of block item ids used by the block filter.
+     */
+    public void setBlockFilter(List<String> filter) {
+        this.block_filter = filter;
     }
 
     /**

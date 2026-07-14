@@ -2,21 +2,30 @@ package cuebitt.trowelkey.client;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.core.Holder;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.network.protocol.game.ServerboundSetCarriedItemPacket;
@@ -65,21 +74,47 @@ public class TrowelKeyClient implements ClientModInitializer {
     placeRandomKeyMapping = KeyBindingHelper.registerKeyBinding(
         new KeyMapping(KEY_PLACE_RANDOM, GLFW.GLFW_KEY_R, CATEGORY));
 
+    ItemTooltipCallback.EVENT.register((stack, context, type, lines) -> {
+      if (TrowelUtil.isTrowel(stack)) {
+        TrowelMode mode = getMode(stack);
+        Component modeText = Component.translatable(
+            mode == TrowelMode.HOTBAR ? "enum.trowel-key.hotbar" : "enum.trowel-key.inventory");
+        lines.add(Component.translatable("tooltip.trowel-key.mode", modeText));
+      }
+    });
+
     ClientTickEvents.END_CLIENT_TICK.register(
         client -> {
           while (placeRandomKeyMapping.consumeClick()) {
-            placeRandomBlock(client);
+            if (TrowelConfig.getInstance().isHotkeyEnabled()) {
+              placeRandomBlock(
+                  client,
+                  TrowelConfig.getInstance().getHotkeyMode(),
+                  TrowelConfig.getInstance().isHotkeyRequiresTrowel());
+            }
           }
         });
   }
 
   /**
-   * Returns the placement mode stored for the given trowel, defaulting to
-   * {@link TrowelMode#HOTBAR} for non-trowels or trowels that have not been configured yet.
+   * Returns the placement mode stored for the given trowel, defaulting to the configured
+   * default trowel mode for non-trowels or trowels that have not been configured yet.
    */
   public static TrowelMode getMode(ItemStack stack) {
-    if (!TrowelUtil.isTrowel(stack)) return TrowelMode.HOTBAR;
-    return MODE_MAP.getOrDefault(modeKey(stack), TrowelMode.HOTBAR);
+    if (!TrowelUtil.isTrowel(stack)) return TrowelConfig.getInstance().getDefaultMode();
+    return MODE_MAP.getOrDefault(modeKey(stack), TrowelConfig.getInstance().getDefaultMode());
+  }
+
+  /**
+   * Clears every stored per-trowel placement mode. Used by the config screen's reset button,
+   * which also surfaces a confirmation message if a player is available.
+   */
+  public static void resetModes() {
+    MODE_MAP.clear();
+    Player player = Minecraft.getInstance().player;
+    if (player != null) {
+      player.displayClientMessage(Component.translatable("action.trowel-key.modes_reset"), true);
+    }
   }
 
   /**
@@ -93,21 +128,19 @@ public class TrowelKeyClient implements ClientModInitializer {
   /**
    * Places a random block from the trowel's active inventory.
    *
-   * <p>Detects which hand holds the trowel, resolves its mode, and delegates to the hotbar
-   * or full-inventory routine. Does nothing if no trowel is held or the world/player is not
-   * ready.
+   * <p>When {@code requireTrowel} is set, does nothing unless a trowel is held (the right-click
+   * path). Otherwise placement uses {@code mode} regardless of whether a trowel is held (the
+   * hotkey path, which can be configured to work without a trowel). Does nothing if the
+   * world/player is not ready.
    */
-  public static void placeRandomBlock(Minecraft client) {
+  public static void placeRandomBlock(Minecraft client, TrowelMode mode, boolean requireTrowel) {
     if (client.player == null || client.level == null) return;
 
-    ItemStack mainHand = client.player.getMainHandItem();
-    boolean inMainHand = TrowelUtil.isTrowel(mainHand);
-    ItemStack offHand = client.player.getOffhandItem();
-    boolean inOffHand = TrowelUtil.isTrowel(offHand);
-
-    if (!inMainHand && !inOffHand) return;
-
-    TrowelMode mode = inMainHand ? getMode(mainHand) : getMode(offHand);
+    if (requireTrowel) {
+      boolean inMainHand = TrowelUtil.isTrowel(client.player.getMainHandItem());
+      boolean inOffHand = TrowelUtil.isTrowel(client.player.getOffhandItem());
+      if (!inMainHand && !inOffHand) return;
+    }
 
     if (mode == TrowelMode.INVENTORY) {
       placeRandomBlockFromInventory(client);
@@ -134,17 +167,49 @@ public class TrowelKeyClient implements ClientModInitializer {
 
   /**
    * Collects the inventory slot indices in {@code [from, to)} that currently hold a
-   * placeable block item.
+   * placeable block item, honouring the block filter configured in {@link TrowelConfig}.
    */
   private static List<Integer> collectPlaceableSlots(Minecraft client, int from, int to) {
+    TrowelConfig config = TrowelConfig.getInstance();
+    BlockFilterMode filterMode = config.getBlockFilterMode();
+    Set<String> filter = new HashSet<>(config.getBlockFilter());
+
     List<Integer> slots = new ArrayList<>();
     for (int i = from; i < to; i++) {
       ItemStack stack = client.player.getInventory().getItem(i);
-      if (!stack.isEmpty() && stack.getItem() instanceof BlockItem) {
-        slots.add(i);
-      }
+      if (stack.isEmpty() || !(stack.getItem() instanceof BlockItem)) continue;
+
+      boolean matches = matchesFilter(stack, filter);
+      if (filterMode == BlockFilterMode.BLACKLIST && matches) continue;
+      if (filterMode == BlockFilterMode.WHITELIST && !matches) continue;
+
+      slots.add(i);
     }
     return slots;
+  }
+
+  /**
+   * Returns {@code true} if {@code stack} matches any entry in the block filter. Plain
+   * entries are matched against the item id; entries prefixed with {@code #} are treated as
+   * block tags and matched against the block the item places.
+   */
+  private static boolean matchesFilter(ItemStack stack, Set<String> filter) {
+    if (filter.isEmpty()) return false;
+
+    Block block = ((BlockItem) stack.getItem()).getBlock();
+    String itemId = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
+
+    for (String entry : filter) {
+      if (entry.startsWith("#") && entry.length() > 1) {
+        TagKey<Block> tagKey = TagKey.create(Registries.BLOCK, ResourceLocation.parse(entry.substring(1)));
+        if (BuiltInRegistries.BLOCK.getTag(tagKey).map(set -> set.contains(Holder.direct(block))).orElse(false)) {
+          return true;
+        }
+      } else if (itemId.equals(entry)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**

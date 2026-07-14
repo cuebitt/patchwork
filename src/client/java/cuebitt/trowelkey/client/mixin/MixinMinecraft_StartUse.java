@@ -55,6 +55,9 @@ public class MixinMinecraft_StartUse {
             return;
         }
 
-        TrowelKeyClient.placeRandomBlock(client);
+        ItemStack trowel = TrowelUtil.isTrowel(client.player.getMainHandItem())
+                ? client.player.getMainHandItem()
+                : client.player.getOffhandItem();
+        TrowelKeyClient.placeRandomBlock(client, TrowelKeyClient.getMode(trowel), true);
     }
 }
