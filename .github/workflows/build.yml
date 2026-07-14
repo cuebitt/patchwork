@@ -44,13 +44,24 @@ jobs:
           sed -i "s/^mod_version=.*/mod_version=$VERSION/" gradle.properties
           echo "MOD_VERSION=$VERSION" >> $GITHUB_ENV
       - run: ./gradlew build
+      - name: Update Modrinth project description from README
+        uses: funnyboy-roks/modrinth-auto-desc@v1.7
+        with:
+          auth-token: ${{ secrets.MODRINTH_TOKEN }}
+          slug: ${{ vars.MODRINTH_ID }}
+      - name: Get changelog entry for this version
+        id: changelog
+        uses: mindsers/changelog-reader-action@v2
+        with:
+          version: ${{ env.MOD_VERSION }}
+          path: ./CHANGELOG.md
       - uses: cloudnode-pro/modrinth-publish@v2
         with:
           token: ${{ secrets.MODRINTH_TOKEN }}
           project: ${{ vars.MODRINTH_ID }}
           name: ${{ github.event.release.name }}
           version: ${{ env.MOD_VERSION }}
-          changelog: ${{ github.event.release.body }}
+          changelog: ${{ steps.changelog.outputs.changes }}
           loaders: fabric
           game-versions: 1.21.1
           files: build/libs/patchwork-${{ env.MOD_VERSION }}.jar
