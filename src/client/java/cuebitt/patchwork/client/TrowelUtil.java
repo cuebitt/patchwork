@@ -12,7 +12,6 @@ import net.minecraft.world.item.ItemStack;
  */
 public class TrowelUtil {
 
-  /** Returns {@code true} if {@code stack} is a trowel according to the current config. */
   public static boolean isTrowel(ItemStack stack) {
     if (stack.isEmpty()) return false;
 

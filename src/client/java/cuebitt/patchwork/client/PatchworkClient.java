@@ -153,13 +153,11 @@ public class PatchworkClient implements ClientModInitializer {
     }
   }
 
-  /** Places a random block drawn from the entire player inventory (slots 0-35). */
   public static void placeRandomBlockFromInventory(Minecraft client) {
     if (client.player == null || client.level == null) return;
     placeRandomFromSlots(client, collectPlaceableSlots(client, 0, 36));
   }
 
-  /** Places a random block drawn only from the nine hotbar slots (0-8). */
   private static void placeRandomHotbarBlock(Minecraft client) {
     if (client.player == null || client.level == null) return;
     placeRandomFromSlots(client, collectPlaceableSlots(client, 0, 9));
@@ -253,10 +251,6 @@ public class PatchworkClient implements ClientModInitializer {
     client.player.getInventory().selected = originalSlot;
   }
 
-  /**
-   * Swaps the item in {@code inventorySlot} with the hotbar slot {@code hotbarSlot} via a SWAP
-   * inventory click, so the block ends up in a selectable hotbar slot.
-   */
   private static void swapWithHotbar(Minecraft client, int inventorySlot, int hotbarSlot) {
     // SWAP the block into the player's hotbar slot so useItemOn can actually reach it
     client.gameMode.handleInventoryMouseClick(
