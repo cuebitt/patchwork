@@ -7,6 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-08-24
+
+### Changed
+
+- Replaced Cloth Config with Yet Another Config Lib (YACL) for the config
+  screen (`yacl_version=3.6.1+1.21-fabric`, `maven.isxander.dev`).
+- Reworked `TrowelConfigScreen` on top of YACL and removed the custom
+  `ResetButtonEntry` widget.
+
+## [1.1.2] - 2026-08-24
+
+### Added
+
+- Spotless CI workflow (`.github/workflows/spotless.yml`) running
+  `./gradlew spotlessCheck` on push and pull requests.
+
+### Changed
+
+- Streamlined random block placement in `PatchworkClient.java:147` — consolidated
+  `placeRandomBlockFromInventory` / `placeRandomHotbarBlock` into a single
+  `placeRandomFromRange` helper.
+- Cleaned up `TrowelConfig.java` (removed unused `getTrowelItemId` and
+  redundant Javadoc).
+
+### Removed
+
+- Unused trowel item mixin `MixinShovelItem.java` and its entry in
+  `patchwork.client.mixins.json`.
+
 ## [1.1.1] - 2026-07-14
 
 ### Changed
