@@ -147,20 +147,15 @@ public class PatchworkClient implements ClientModInitializer {
     }
 
     if (mode == TrowelMode.INVENTORY) {
-      placeRandomBlockFromInventory(client);
+      placeRandomFromRange(client, 0, 36);
     } else {
-      placeRandomHotbarBlock(client);
+      placeRandomFromRange(client, 0, 9);
     }
   }
 
-  public static void placeRandomBlockFromInventory(Minecraft client) {
+  private static void placeRandomFromRange(Minecraft client, int from, int to) {
     if (client.player == null || client.level == null) return;
-    placeRandomFromSlots(client, collectPlaceableSlots(client, 0, 36));
-  }
-
-  private static void placeRandomHotbarBlock(Minecraft client) {
-    if (client.player == null || client.level == null) return;
-    placeRandomFromSlots(client, collectPlaceableSlots(client, 0, 9));
+    placeRandomFromSlots(client, collectPlaceableSlots(client, from, to));
   }
 
   /**

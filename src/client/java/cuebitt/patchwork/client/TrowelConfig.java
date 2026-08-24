@@ -50,10 +50,6 @@ public class TrowelConfig {
     return BuiltInRegistries.ITEM.get(ResourceLocation.parse(trowel_item));
   }
 
-  public String getTrowelItemId() {
-    return trowel_item;
-  }
-
   public void setTrowelItem(Item item) {
     ResourceLocation key = BuiltInRegistries.ITEM.getKey(item);
     if (key != null) {

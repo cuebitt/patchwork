@@ -4,7 +4,6 @@
   "compatibilityLevel": "JAVA_21",
   "client": [
     "MixinMinecraft_StartUse",
-    "MixinShovelItem",
     "MixinItemStack_HasFoil"
   ],
   "injectors": {
