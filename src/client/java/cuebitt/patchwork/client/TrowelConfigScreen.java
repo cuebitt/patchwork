@@ -1,18 +1,22 @@
 package cuebitt.patchwork.client;
 
+import dev.isxander.yacl3.api.ButtonOption;
+import dev.isxander.yacl3.api.ConfigCategory;
+import dev.isxander.yacl3.api.LabelOption;
+import dev.isxander.yacl3.api.ListOption;
+import dev.isxander.yacl3.api.Option;
+import dev.isxander.yacl3.api.YetAnotherConfigLib;
+import dev.isxander.yacl3.api.controller.EnumControllerBuilder;
+import dev.isxander.yacl3.api.controller.StringControllerBuilder;
+import dev.isxander.yacl3.api.controller.TickBoxControllerBuilder;
 import java.util.ArrayList;
-import java.util.stream.Collectors;
-import me.shedaniel.clothconfig2.api.ConfigBuilder;
-import me.shedaniel.clothconfig2.api.ConfigCategory;
-import me.shedaniel.clothconfig2.impl.builders.DropdownMenuBuilder;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Items;
+import net.minecraft.resources.ResourceLocation;
 
 /**
- * Builds the ModMenu config screen for the mod using Cloth Config.
+ * Builds the ModMenu config screen for the mod using YACL.
  *
  * <p>Exposes the trowel item and its name, the enchantment glint toggle, and the default trowel
  * mode, and a reset for per-trowel modes under General; the hotkey enable flag, mode, and whether a
@@ -25,136 +29,130 @@ public class TrowelConfigScreen {
   public static Screen createScreen(Screen parent) {
     TrowelConfig config = TrowelConfig.getInstance();
 
-    ConfigBuilder builder =
-        ConfigBuilder.create()
-            .setParentScreen(parent)
-            .setTitle(Component.translatable("title.patchwork.config"));
-
-    ConfigCategory general =
-        builder.getOrCreateCategory(Component.translatable("category.patchwork.general"));
-
-    general.addEntry(
-        builder
-            .entryBuilder()
-            .startDropdownMenu(
-                Component.translatable("option.patchwork.trowel_item"),
-                DropdownMenuBuilder.TopCellElementBuilder.ofItemObject(config.getTrowelItem()),
-                DropdownMenuBuilder.CellCreatorBuilder.ofItemObject())
-            .setDefaultValue(Items.IRON_SHOVEL)
-            .setSelections(BuiltInRegistries.ITEM.stream().collect(Collectors.toSet()))
-            .setSaveConsumer(item -> config.setTrowelItem((Item) item))
-            .build());
-
-    general.addEntry(
-        builder
-            .entryBuilder()
-            .startStrField(
-                Component.translatable("option.patchwork.trowel_name"), config.getTrowelName())
-            .setDefaultValue("Trowel")
-            .setSaveConsumer(config::setTrowelName)
-            .build());
-
-    general.addEntry(
-        builder
-            .entryBuilder()
-            .startBooleanToggle(
-                Component.translatable("option.patchwork.show_enchant_glint"),
-                config.isShowEnchantGlint())
-            .setDefaultValue(true)
-            .setSaveConsumer(config::setShowEnchantGlint)
-            .build());
-
-    general.addEntry(
-        builder
-            .entryBuilder()
-            .startEnumSelector(
-                Component.translatable("option.patchwork.default_mode"),
-                TrowelMode.class,
-                config.getDefaultMode())
-            .setDefaultValue(TrowelMode.HOTBAR)
-            .setEnumNameProvider(
-                mode -> Component.translatable("enum.patchwork." + mode.name().toLowerCase()))
-            .setSaveConsumer(config::setDefaultMode)
-            .build());
-
-    general.addEntry(
-        new ResetButtonEntry(
-            Component.translatable("option.patchwork.reset_per_trowel_modes"),
-            Component.translatable("option.patchwork.reset_per_trowel_modes.button"),
-            PatchworkClient::resetModes));
-
-    ConfigCategory hotkey =
-        builder.getOrCreateCategory(Component.translatable("category.patchwork.hotkey"));
-
-    hotkey.addEntry(
-        builder
-            .entryBuilder()
-            .fillKeybindingField(
-                Component.translatable("option.patchwork.hotkey_key"),
-                PatchworkClient.placeRandomKeyMapping)
-            .setTooltip(Component.translatable("option.patchwork.hotkey_key.tooltip"))
-            .build());
-
-    hotkey.addEntry(
-        builder
-            .entryBuilder()
-            .startBooleanToggle(
-                Component.translatable("option.patchwork.hotkey_enabled"), config.isHotkeyEnabled())
-            .setDefaultValue(true)
-            .setSaveConsumer(config::setHotkeyEnabled)
-            .build());
-
-    hotkey.addEntry(
-        builder
-            .entryBuilder()
-            .startEnumSelector(
-                Component.translatable("option.patchwork.hotkey_mode"),
-                TrowelMode.class,
-                config.getHotkeyMode())
-            .setDefaultValue(TrowelMode.HOTBAR)
-            .setEnumNameProvider(
-                mode -> Component.translatable("enum.patchwork." + mode.name().toLowerCase()))
-            .setSaveConsumer(config::setHotkeyMode)
-            .build());
-
-    hotkey.addEntry(
-        builder
-            .entryBuilder()
-            .startBooleanToggle(
-                Component.translatable("option.patchwork.hotkey_requires_trowel"),
-                config.isHotkeyRequiresTrowel())
-            .setDefaultValue(true)
-            .setSaveConsumer(config::setHotkeyRequiresTrowel)
-            .build());
-
-    ConfigCategory filtering =
-        builder.getOrCreateCategory(Component.translatable("category.patchwork.filtering"));
-
-    filtering.addEntry(
-        builder
-            .entryBuilder()
-            .startEnumSelector(
-                Component.translatable("option.patchwork.block_filter_mode"),
-                BlockFilterMode.class,
-                config.getBlockFilterMode())
-            .setDefaultValue(BlockFilterMode.NONE)
-            .setEnumNameProvider(
-                mode ->
-                    Component.translatable("enum.patchwork.filter." + mode.name().toLowerCase()))
-            .setSaveConsumer(config::setBlockFilterMode)
-            .build());
-
-    filtering.addEntry(
-        builder
-            .entryBuilder()
-            .startStrList(
-                Component.translatable("option.patchwork.block_filter"), config.getBlockFilter())
-            .setDefaultValue(new ArrayList<>())
-            .setSaveConsumer(config::setBlockFilter)
-            .build());
-
-    builder.setSavingRunnable(config::save);
-
-    return builder.build();
+    return YetAnotherConfigLib.createBuilder()
+        .title(Component.translatable("title.patchwork.config"))
+        .category(
+            ConfigCategory.createBuilder()
+                .name(Component.translatable("category.patchwork.general"))
+                .option(
+                    Option.<String>createBuilder()
+                        .name(Component.translatable("option.patchwork.trowel_item"))
+                        .binding(
+                            "minecraft:iron_shovel",
+                            () -> {
+                              var key = BuiltInRegistries.ITEM.getKey(config.getTrowelItem());
+                              return key != null ? key.toString() : "minecraft:iron_shovel";
+                            },
+                            newVal -> {
+                              try {
+                                var item =
+                                    BuiltInRegistries.ITEM.get(ResourceLocation.parse(newVal));
+                                if (item != null) {
+                                  config.setTrowelItem(item);
+                                }
+                              } catch (Exception ignored) {
+                                // invalid id - keep previous value
+                              }
+                            })
+                        .controller(StringControllerBuilder::create)
+                        .build())
+                .option(
+                    Option.<String>createBuilder()
+                        .name(Component.translatable("option.patchwork.trowel_name"))
+                        .binding("Trowel", config::getTrowelName, config::setTrowelName)
+                        .controller(StringControllerBuilder::create)
+                        .build())
+                .option(
+                    Option.<Boolean>createBuilder()
+                        .name(Component.translatable("option.patchwork.show_enchant_glint"))
+                        .binding(true, config::isShowEnchantGlint, config::setShowEnchantGlint)
+                        .controller(TickBoxControllerBuilder::create)
+                        .build())
+                .option(
+                    Option.<TrowelMode>createBuilder()
+                        .name(Component.translatable("option.patchwork.default_mode"))
+                        .binding(TrowelMode.HOTBAR, config::getDefaultMode, config::setDefaultMode)
+                        .controller(
+                            opt ->
+                                EnumControllerBuilder.create(opt)
+                                    .enumClass(TrowelMode.class)
+                                    .formatValue(
+                                        mode ->
+                                            Component.translatable(
+                                                "enum.patchwork." + mode.name().toLowerCase())))
+                        .build())
+                .option(
+                    ButtonOption.createBuilder()
+                        .name(Component.translatable("option.patchwork.reset_per_trowel_modes"))
+                        .text(
+                            Component.translatable(
+                                "option.patchwork.reset_per_trowel_modes.button"))
+                        .action((screen, opt) -> PatchworkClient.resetModes())
+                        .build())
+                .build())
+        .category(
+            ConfigCategory.createBuilder()
+                .name(Component.translatable("category.patchwork.hotkey"))
+                .option(
+                    LabelOption.create(
+                        Component.translatable("option.patchwork.hotkey_key.tooltip")))
+                .option(
+                    Option.<Boolean>createBuilder()
+                        .name(Component.translatable("option.patchwork.hotkey_enabled"))
+                        .binding(true, config::isHotkeyEnabled, config::setHotkeyEnabled)
+                        .controller(TickBoxControllerBuilder::create)
+                        .build())
+                .option(
+                    Option.<TrowelMode>createBuilder()
+                        .name(Component.translatable("option.patchwork.hotkey_mode"))
+                        .binding(TrowelMode.HOTBAR, config::getHotkeyMode, config::setHotkeyMode)
+                        .controller(
+                            opt ->
+                                EnumControllerBuilder.create(opt)
+                                    .enumClass(TrowelMode.class)
+                                    .formatValue(
+                                        mode ->
+                                            Component.translatable(
+                                                "enum.patchwork." + mode.name().toLowerCase())))
+                        .build())
+                .option(
+                    Option.<Boolean>createBuilder()
+                        .name(Component.translatable("option.patchwork.hotkey_requires_trowel"))
+                        .binding(
+                            true, config::isHotkeyRequiresTrowel, config::setHotkeyRequiresTrowel)
+                        .controller(TickBoxControllerBuilder::create)
+                        .build())
+                .build())
+        .category(
+            ConfigCategory.createBuilder()
+                .name(Component.translatable("category.patchwork.filtering"))
+                .option(
+                    Option.<BlockFilterMode>createBuilder()
+                        .name(Component.translatable("option.patchwork.block_filter_mode"))
+                        .binding(
+                            BlockFilterMode.NONE,
+                            config::getBlockFilterMode,
+                            config::setBlockFilterMode)
+                        .controller(
+                            opt ->
+                                EnumControllerBuilder.create(opt)
+                                    .enumClass(BlockFilterMode.class)
+                                    .formatValue(
+                                        mode ->
+                                            Component.translatable(
+                                                "enum.patchwork.filter."
+                                                    + mode.name().toLowerCase())))
+                        .build())
+                .option(
+                    ListOption.<String>createBuilder()
+                        .name(Component.translatable("option.patchwork.block_filter"))
+                        .binding(new ArrayList<>(), config::getBlockFilter, config::setBlockFilter)
+                        .controller(StringControllerBuilder::create)
+                        .initial("")
+                        .build())
+                .build())
+        .save(config::save)
+        .build()
+        .generateScreen(parent);
   }
 }
