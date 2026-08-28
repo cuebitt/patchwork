@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * the shovel's normal use action.
  *
  * <p>Shift + Right Click toggles the trowel between hotbar and inventory mode; a plain right-click
- * delegates to {@link PatchworkClient#placeRandomBlock(Minecraft)}.
+ * delegates to {@link PatchworkClient#placeRandomBlock(Minecraft, TrowelMode)}.
  */
 @Mixin(Minecraft.class)
 public class MixinMinecraft_StartUse {
@@ -62,6 +62,6 @@ public class MixinMinecraft_StartUse {
         TrowelUtil.isTrowel(client.player.getMainHandItem())
             ? client.player.getMainHandItem()
             : client.player.getOffhandItem();
-    PatchworkClient.placeRandomBlock(client, PatchworkClient.getMode(trowel), true);
+    PatchworkClient.placeRandomBlock(client, PatchworkClient.getMode(trowel));
   }
 }

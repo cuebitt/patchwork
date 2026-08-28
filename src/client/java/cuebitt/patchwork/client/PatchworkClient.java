@@ -37,7 +37,7 @@ import org.lwjgl.glfw.GLFW;
  * <p>Registers the random-place keybinding and the "is_trowel" item property that the glint mixin
  * relies on. Actual placement is triggered either by that keybinding (handled here on the client
  * tick) or by a right-click, which {@code MixinMinecraft_StartUse} intercepts and redirects to
- * {@link #placeRandomBlock(Minecraft)}.
+ * {@link #placeRandomBlock(Minecraft, TrowelMode)}.
  */
 public class PatchworkClient implements ClientModInitializer {
   private static final String CATEGORY = "key.categories.patchwork";
@@ -91,13 +91,9 @@ public class PatchworkClient implements ClientModInitializer {
 
     ClientTickEvents.END_CLIENT_TICK.register(
         client -> {
+          if (!TrowelConfig.getInstance().isHotkeyEnabled()) return;
           while (placeRandomKeyMapping.consumeClick()) {
-            if (TrowelConfig.getInstance().isHotkeyEnabled()) {
-              placeRandomBlock(
-                  client,
-                  TrowelConfig.getInstance().getHotkeyMode(),
-                  TrowelConfig.getInstance().isHotkeyRequiresTrowel());
-            }
+            placeRandomBlock(client, TrowelConfig.getInstance().getHotkeyMode());
           }
         });
   }
@@ -130,21 +126,12 @@ public class PatchworkClient implements ClientModInitializer {
   }
 
   /**
-   * Places a random block from the trowel's active inventory.
-   *
-   * <p>When {@code requireTrowel} is set, does nothing unless a trowel is held (the right-click
-   * path). Otherwise placement uses {@code mode} regardless of whether a trowel is held (the hotkey
-   * path, which can be configured to work without a trowel). Does nothing if the world/player is
-   * not ready.
+   * Places a random block from the active inventory. The hotkey never requires a trowel;
+   * right-click is gated by {@code MixinMinecraft_StartUse} before calling this. Does nothing if
+   * the world/player is not ready.
    */
-  public static void placeRandomBlock(Minecraft client, TrowelMode mode, boolean requireTrowel) {
+  public static void placeRandomBlock(Minecraft client, TrowelMode mode) {
     if (client.player == null || client.level == null) return;
-
-    if (requireTrowel) {
-      boolean inMainHand = TrowelUtil.isTrowel(client.player.getMainHandItem());
-      boolean inOffHand = TrowelUtil.isTrowel(client.player.getOffhandItem());
-      if (!inMainHand && !inOffHand) return;
-    }
 
     if (mode == TrowelMode.INVENTORY) {
       placeRandomFromRange(client, 0, 36);

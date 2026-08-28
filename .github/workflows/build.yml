@@ -17,6 +17,7 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
           cache: gradle
+      - uses: astral-sh/setup-uv@v5
       - run: chmod +x ./gradlew
       - run: ./gradlew build
       - uses: actions/upload-artifact@v7
@@ -36,6 +37,7 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
           cache: gradle
+      - uses: astral-sh/setup-uv@v5
       - run: chmod +x ./gradlew
       - name: Set version from release tag
         run: |

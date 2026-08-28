@@ -44,9 +44,3 @@ The built jar will be in `build/libs/`.
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE)
 file for details.
-
-This mod's icon and the trowel item use a texture from
-[malcolmriley/unused-textures](https://github.com/malcolmriley/unused-textures),
-which is provided under the
-[CC-BY-4.0](https://github.com/malcolmriley/unused-textures/blob/master/LICENSE)
-license.

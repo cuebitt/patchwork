@@ -13,7 +13,6 @@
   "option.patchwork.hotkey_key.tooltip": "The key used to place a random block. Also editable in Options > Controls.",
   "option.patchwork.hotkey_enabled": "Enable Hotkey",
   "option.patchwork.hotkey_mode": "Hotkey Mode",
-  "option.patchwork.hotkey_requires_trowel": "Require Trowel for Hotkey",
   "option.patchwork.reset_per_trowel_modes": "Reset Per-Trowel Modes",
   "option.patchwork.reset_per_trowel_modes.button": "Reset",
   "option.patchwork.block_filter_mode": "Filter Mode",

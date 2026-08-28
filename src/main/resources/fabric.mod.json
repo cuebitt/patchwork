@@ -3,7 +3,7 @@
 	"id": "patchwork",
 	"version": "${version}",
 	"name": "Patchwork",
-	"description": "Right-click or press R (configurable) to place a random placeable block from your hotbar or full inventory. Shift+Right Click to toggle between Hotbar and Inventory mode.",
+	"description": "Client-sided hotkey and custom item used to place random items from your hotbar or inventory!",
 	"authors": [
 		"Cuebitt"
 	],

@@ -19,9 +19,9 @@ import net.minecraft.resources.ResourceLocation;
  * Builds the ModMenu config screen for the mod using YACL.
  *
  * <p>Exposes the trowel item and its name, the enchantment glint toggle, and the default trowel
- * mode, and a reset for per-trowel modes under General; the hotkey enable flag, mode, and whether a
- * trowel is required under Hotkey; and the block filter under Filtering. Changes are written back
- * through the config and persisted when the player saves.
+ * mode, and a reset for per-trowel modes under General; the hotkey enable flag and mode under
+ * Hotkey; and the block filter under Filtering. Changes are written back through the config and
+ * persisted when the player saves.
  */
 public class TrowelConfigScreen {
 
@@ -114,13 +114,6 @@ public class TrowelConfigScreen {
                                         mode ->
                                             Component.translatable(
                                                 "enum.patchwork." + mode.name().toLowerCase())))
-                        .build())
-                .option(
-                    Option.<Boolean>createBuilder()
-                        .name(Component.translatable("option.patchwork.hotkey_requires_trowel"))
-                        .binding(
-                            true, config::isHotkeyRequiresTrowel, config::setHotkeyRequiresTrowel)
-                        .controller(TickBoxControllerBuilder::create)
                         .build())
                 .build())
         .category(

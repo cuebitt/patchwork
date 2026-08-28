@@ -17,9 +17,9 @@ import net.minecraft.world.item.Item;
  *
  * <p>Holds the item id treated as a trowel, the custom name that marks a stack as a trowel, and
  * whether the enchantment glint is shown on trowels. It also holds the hotkey settings (enabled
- * flag, mode, whether a trowel must be held, and a resettable per-trowel default mode) and the
- * block filter used to include or exclude blocks from random placement. A single shared instance is
- * created lazily and saved on change.
+ * flag, mode, and a resettable per-trowel default mode) and the block filter used to include or
+ * exclude blocks from random placement. A single shared instance is created lazily and saved on
+ * change.
  */
 public class TrowelConfig {
   private static final Path CONFIG_PATH = Paths.get("config", "patchwork", "config.json");
@@ -34,7 +34,6 @@ public class TrowelConfig {
 
   private boolean hotkey_enabled = true;
   private TrowelMode hotkey_mode = TrowelMode.HOTBAR;
-  private boolean hotkey_requires_trowel = true;
   private TrowelMode default_mode = TrowelMode.HOTBAR;
   private BlockFilterMode block_filter_mode = BlockFilterMode.NONE;
   private List<String> block_filter = new ArrayList<>();
@@ -87,14 +86,6 @@ public class TrowelConfig {
 
   public void setHotkeyMode(TrowelMode mode) {
     this.hotkey_mode = mode;
-  }
-
-  public boolean isHotkeyRequiresTrowel() {
-    return hotkey_requires_trowel;
-  }
-
-  public void setHotkeyRequiresTrowel(boolean requires) {
-    this.hotkey_requires_trowel = requires;
   }
 
   // the mode a fresh trowel starts in, before the player toggles it with Shift + Right Click

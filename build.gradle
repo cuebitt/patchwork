@@ -9,7 +9,7 @@ spotless {
 		target 'src/**/*.java'
 		importOrder()
 		removeUnusedImports()
-		googleJavaFormat('1.24.0')
+		googleJavaFormat('1.35.0')
 		formatAnnotations()
 	}
 }
@@ -67,6 +67,53 @@ processResources {
 	}
 }
 
+// Export .ase sprite sources in assets-src into the mod's texture dir before packaging.
+// Uses the free pure-Python aseprite-reader (MIT); no Aseprite binary required.
+// Runs under uv if available (auto-installs aseprite-reader), else the active Python.
+// Output goes to build/generated/resources (not src/) so it never conflicts with source tasks.
+def isWindows = System.getProperty('os.name').toLowerCase().contains('windows')
+def findExec = { name ->
+	try {
+		def probe = isWindows ? ['cmd', '/c', 'where', name] : ['sh', '-c', "command -v $name"]
+		def p = probe.execute()
+		p.waitFor()
+		return p.exitValue() == 0
+	} catch (e) {
+		return false
+	}
+}
+def pythonHasAsepriteReader = {
+	def py = findExec('python3') ? 'python3' : 'python'
+	try {
+		def p = [py, '-c', 'import aseprite_reader'].execute()
+		p.waitFor()
+		return p.exitValue() == 0
+	} catch (e) {
+		return false
+	}
+}
+
+def generatedResources = file('build/generated/resources')
+
+tasks.register('exportAsepriteTextures', Exec) {
+	group = 'assets'
+	description = 'Renders .ase files under assets-src into PNGs in the texture resources.'
+	inputs.dir file('assets-src')
+	outputs.dir generatedResources
+	onlyIf { findExec('uv') || pythonHasAsepriteReader() }
+	doFirst {
+		def cmd = findExec('uv')
+			? ['uv', 'run', '--with', 'aseprite-reader', 'python', 'assets-src/export.py']
+			: [findExec('python3') ? 'python3' : 'python', 'assets-src/export.py']
+		workingDir rootDir
+		executable cmd.head()
+		args = cmd.tail()
+	}
+}
+
+processClientResources.dependsOn exportAsepriteTextures
+sourceSets.client.resources.srcDir generatedResources
+
 tasks.withType(JavaCompile).configureEach {
 	it.options.release = 21
 }
@@ -76,6 +123,7 @@ java {
 	// if it is present.
 	// If you remove this line, sources will not be generated.
 	withSourcesJar()
+	tasks.named('sourcesJar') { dependsOn exportAsepriteTextures }
 
 	sourceCompatibility = JavaVersion.VERSION_21
 	targetCompatibility = JavaVersion.VERSION_21
