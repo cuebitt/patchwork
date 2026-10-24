@@ -40,6 +40,3 @@ replay_*.log
 *.jfr
 
 scripts/
-
-AGENTS.md
-skills-lock.json
